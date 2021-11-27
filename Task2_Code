@@ -91,6 +91,8 @@ def main():
 
     ur5 = Ur5Moveit()
 
+    #for the first tomato ---> middle one
+
     lst_joint_angles_1 = [math.radians(90),
                           math.radians(35),
                           math.radians(0),
@@ -99,29 +101,132 @@ def main():
                           math.radians(0)]
 
     lst_joint_angles_2 = [math.radians(90),
-                          math.radians(35),
-                          math.radians(-35),
+                          math.radians(42),
+                          math.radians(-42),
                           math.radians(0),
                           math.radians(10),
                           math.radians(0)]
 
-    # lst_joint_angles_3 = [math.radians(-70),
-    #                       math.radians(-54),
-    #                       math.radians(-139),
-    #                       math.radians(-174),
-    #                       math.radians(9),
-    #                       math.radians(6)]
+
+    lst_joint_angles_3 = [math.radians(0),
+                          math.radians(20),
+                          math.radians(-20),
+                          math.radians(0),
+                          math.radians(10),
+                          math.radians(0)]
+
+
+    #for the second tomato ----> top one
+
+    lst_joint_angles_4 = [math.radians(110),
+                          math.radians(30),
+                          math.radians(-40),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0)]
+
+
+    lst_joint_angles_5 = [math.radians(115),
+                          math.radians(35),
+                          math.radians(-55),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0)]
+
+
+    lst_joint_angles_6 = [math.radians(0),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0)]
+
+
+    # for the third tomato ----> bottom one
+
+    lst_joint_angles_7 = [math.radians(100),
+                          math.radians(50),
+                          math.radians(-10),
+                          math.radians(-10),
+                          math.radians(0),
+                          math.radians(0)]
+
+
+
+    lst_joint_angles_8 = [math.radians(100),
+                          math.radians(50),
+                          math.radians(-10),
+                          math.radians(-30),
+                          math.radians(0),
+                          math.radians(0)]
+
+
+
+    lst_joint_angles_9 = [math.radians(0),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0),
+                          math.radians(0)]
+
+
+
 
     while not rospy.is_shutdown():
+
+        # #Acctuation for the first tomato
         ur5.set_joint_angles(lst_joint_angles_1)
+        rospy.sleep(0.5)
         ur5.gripper_robot(0)
-        rospy.sleep(2)
+        rospy.sleep(0.5)
         ur5.set_joint_angles(lst_joint_angles_2)
+        rospy.sleep(0.5)
         ur5.gripper_robot(1)
-        rospy.sleep(2)
+        rospy.sleep(0.5)
+        ur5.set_joint_angles(lst_joint_angles_3)
+        rospy.sleep(0.5)
+        ur5.gripper_robot(0)
+        rospy.sleep(0.5)
+
+
+        #Acctuation for the second tomato
+        ur5.set_joint_angles(lst_joint_angles_4)
+        rospy.sleep(0.5)
+        ur5.gripper_robot(0)
+        rospy.sleep(0.5)
+
+        ur5.set_joint_angles(lst_joint_angles_5)
+        rospy.sleep(0.5)
+        ur5.gripper_robot(1)
+        rospy.sleep(0.5)
+
+
+        ur5.set_joint_angles(lst_joint_angles_6)
+        rospy.sleep(0.5)
+        ur5.gripper_robot(0)
+        rospy.sleep(0.5)
+
+
+
+        #Acctuation for the third tomato
+
+        ur5.set_joint_angles(lst_joint_angles_7)
+        rospy.sleep(0.5)
+        ur5.gripper_robot(0)
+        rospy.sleep(0.5)
+
+        ur5.set_joint_angles(lst_joint_angles_8)
+        rospy.sleep(0.5)
+        ur5.gripper_robot(1)
+        rospy.sleep(0.5)
+
+        ur5.set_joint_angles(lst_joint_angles_9)
+        rospy.sleep(0.5)
+        ur5.gripper_robot(0)
+        rospy.sleep(0.5)
+
+
         break
-        # ur5.set_joint_angles(lst_joint_angles_3)
-        # rospy.sleep(2)
 
     del ur5
 
