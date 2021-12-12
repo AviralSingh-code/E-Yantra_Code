@@ -55,7 +55,7 @@ while True:
     #this is to create a mask
     '''this will filter out and give us the 
     image of that colour'''
-    mask = cv2.inRange(imgHsv,lower,upper)
+    mask = cv2.inRange(imgHser,upper)
 
     '''Now we are creating a new image using the 
     mask'''
