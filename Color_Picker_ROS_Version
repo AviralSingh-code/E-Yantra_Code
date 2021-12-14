@@ -58,7 +58,16 @@ def main(args):
         v_min = cv2.getTrackbarPos("Val Min","TrackBars")
         v_max = cv2.getTrackbarPos("Val Max","TrackBars")
 
+
+        lower = np.array([h_min,s_min,v_min])
+        upper = np.array([h_max,s_max,v_max])
+
+        mask = cv2.inRange(imgHsv,lower,upper)
+
+        imgResult = cv2.bitwise_and(frame,frame,mask=mask)
+
         cv2.imshow("HSV",imgHsv)
+        cv2.imshow("ImageResult",imgResult)
         cv2.waitKey(1)
 
 if __name__ == '__main__':
