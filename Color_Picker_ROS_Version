@@ -68,6 +68,7 @@ def main(args):
 
         cv2.imshow("HSV",imgHsv)
         cv2.imshow("ImageResult",imgResult)
+        cv2.imshow("Mask",mask)
         cv2.waitKey(1)
 
 if __name__ == '__main__':
