@@ -16,14 +16,16 @@ import tf_conversions
 
 tomatoColor = [[0, 37, 117, 0, 250, 255]]
 imgContour = None
-depth_image = np.empty((480,640),float)                     #important way to declare an empty array
+depth_image = np.empty((480,640),float)
 midX = 0
 midY = 0
 
 
 
 def callback_depth(data_depth):
+
     global depth_image
+
     try:
         bridgeDepth = CvBridge()
         depth_image = bridgeDepth.imgmsg_to_cv2(data_depth, "32FC1")
@@ -51,8 +53,8 @@ def getContours(img):
     counter = 1
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        # print(area)
-        if area > 10:                              ###################### SET THIS##########################
+        # print(area)    -----------> for getting the area of the area of interest
+        if area > 100:                      #------> thresholding parameter
             peri = cv2.arcLength(cnt, True)
 
             approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
@@ -84,9 +86,9 @@ def getContours(img):
             0.5, (0, 255, 0), 2)
 
 
-            t.transform.translation.x = X
-            t.transform.translation.y = Y
-            t.transform.translation.z = Z
+            t.transform.translation.x = Z
+            t.transform.translation.y = -X
+            t.transform.translation.z = Y
 
             q = tf_conversions.transformations.quaternion_from_euler(0, 0, 0)
             t.transform.rotation.x = q[0]
@@ -123,19 +125,9 @@ def callback(data):
 
 
 
-
-
-
-
-
-
-
-
-
-
 def main(args):
     rospy.init_node('object_detection', anonymous=True)
-    depth_sub = rospy.Subscriber("/camera/depth/image_raw2", Image, callback_depth)   
+    depth_sub = rospy.Subscriber("/camera/depth/image_raw2", Image, callback_depth)  
     image_sub = rospy.Subscriber("/camera/color/image_raw2", Image, callback)  
     try:
         rospy.spin()
