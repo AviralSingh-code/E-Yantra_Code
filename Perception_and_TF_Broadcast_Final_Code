@@ -68,7 +68,7 @@ def getContours(img):           #this function is used to draw contours in their
     x, y, w, h = 0, 0, 0, 0     #x, y, w, h are for getting the bounding rectangle dimensions for the drawing the contour
     midX = 0            #mid of x is set to 0
     midY = 0            #mid of y is set to 0
-    counter = 1  #this counter is used to label the child frame ------> that means it's value is used to give unique label to every contour and hence giving unique value to every tomato
+    counter = 0  #this counter is used to label the child frame ------> that means it's value is used to give unique label to every contour and hence giving unique value to every tomato
     for cnt in contours:                #for loop is for iterating over all the contours that needs to be drawn
         area = cv2.contourArea(cnt)         #this function is used to return the area of every contour that can be drawn on the image ---> that means every red tomato visible currently
         if area > 10:                   #this is for filtering the noise ---> that means if the area is >10 then it means we are looking at something substantial and we need to draw contour on that and broadcast the TF for that
