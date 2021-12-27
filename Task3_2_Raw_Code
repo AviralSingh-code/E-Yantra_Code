@@ -233,9 +233,9 @@ def main(args):                                                                 
     image_sub = rospy.Subscriber("/camera/color/image_raw2", Image, callback)           #for setting the color image subscriber
     
     ur5_pose_1 = geometry_msgs.msg.Pose()
+    ur5_pose_2 = geometry_msgs.msg.Pose()
+    ur5_pose_3 = geometry_msgs.msg.Pose()
     
-
-    rate = rospy.Rate(10.0)
     while not rospy.is_shutdown():
         try:
             (trans,rot) = listener.lookupTransform('base_link', 'obj1', rospy.Time(0))
@@ -243,15 +243,15 @@ def main(args):                                                                 
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 
-        rospy.loginfo("################")
-        rospy.loginfo(rot[0])
-        rospy.loginfo(rot[1])
-        rospy.loginfo(rot[2])
-        rospy.loginfo(rot[3])
-        rospy.loginfo(trans[0])
-        rospy.loginfo(trans[1])
-        rospy.loginfo(trans[2])
-        rospy.loginfo("###################")
+        # rospy.loginfo("################")
+        # rospy.loginfo(rot[0])
+        # rospy.loginfo(rot[1])
+        # rospy.loginfo(rot[2])
+        # rospy.loginfo(rot[3])
+        # rospy.loginfo(trans[0])
+        # rospy.loginfo(trans[1])
+        # rospy.loginfo(trans[2])
+        # rospy.loginfo("###################")
 
 
 
@@ -296,14 +296,35 @@ def main(args):                                                                 
         ur5_pose_1.orientation.y = 0.9759094471343439
         ur5_pose_1.orientation.z = -0.07502044797426752
         ur5_pose_1.orientation.w = 0.01576806431223178
-        # ur5_pose_1.orientation.x = 0
-        # ur5_pose_1.orientation.y = 0
-        # ur5_pose_1.orientation.z = 0
-        # ur5_pose_1.orientation.w = 1
+
+
+        ur5_pose_2.position.x = 0.050837405356531036
+        ur5_pose_2.position.y = -0.30104679166943865
+        ur5_pose_2.position.z = 1.0103567940402938 
+        ur5_pose_2.orientation.x = 3.075719088687778e-05
+        ur5_pose_2.orientation.y = 0.9990569904292724
+        ur5_pose_2.orientation.z = -0.043418051694363066
+        ur5_pose_2.orientation.w = 4.1418179317504654e-05
+
+
+
+        ur5_pose_3.position.x = 0.16 + trans1[0] + 0.16
+        ur5_pose_3.position.y = 0 + trans1[1] - 0.4
+        ur5_pose_3.position.z = 0.53 + trans1[2] 
+        ur5_pose_3.orientation.x = -0.20426466049594807
+        ur5_pose_3.orientation.y = 0.9759094471343439
+        ur5_pose_3.orientation.z = -0.07502044797426752
+        ur5_pose_3.orientation.w = 0.01576806431223178
+
         
 
         ur5.go_to_pose(ur5_pose_1)
-        rate.sleep()
+        rospy.sleep(1)
+        ur5.go_to_pose(ur5_pose_2)
+        rospy.sleep(1)
+        ur5.go_to_pose(ur5_pose_3)
+        rospy.sleep(1)
+        break
     del ur5
 
 
