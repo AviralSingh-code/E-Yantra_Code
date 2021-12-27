@@ -227,7 +227,9 @@ def callback(data):         #this callback is for color detection
 
 def main(args):                                                                         #this is the main method
     rospy.init_node('object_detection', anonymous=True)                                 #for initializing the node with name object_detection
-    listener = tf.TransformListener()
+    tfBuffer = tf2_ros.Buffer()
+    listener = tf2_ros.TransformListener(tfBuffer)
+    # listener = tf.TransformListener()
     ur5 = Ur5Moveit()
     depth_sub = rospy.Subscriber("/camera/depth/image_raw2", Image, callback_depth)     #for setting the depth image subscriber
     image_sub = rospy.Subscriber("/camera/color/image_raw2", Image, callback)           #for setting the color image subscriber
@@ -238,9 +240,11 @@ def main(args):                                                                 
     
     while not rospy.is_shutdown():
         try:
-            (trans,rot) = listener.lookupTransform('base_link', 'obj1', rospy.Time(0))
-            (trans1,rot1) = listener.lookupTransform('base_link', 'obj0', rospy.Time(0))
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            trans = tfBuffer.lookup_transform('base_link', 'obj1', rospy.Time())
+            trans1 = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time())
+            # (trans,rot) = listener.lookupTransform('base_link', 'obj1', rospy.Time(0))
+            # (trans1,rot1) = listener.lookupTransform('base_link', 'obj0', rospy.Time(0))
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             continue
 
         # rospy.loginfo("################")
@@ -289,9 +293,18 @@ def main(args):                                                                 
         # ur5_pose_1.orientation.w = -1
 
 
-        ur5_pose_1.position.x = 0.16 + trans[0] + 0.16
-        ur5_pose_1.position.y = 0 + trans[1] - 0.4
-        ur5_pose_1.position.z = 0.53 + trans[2] 
+        # ur5_pose_1.position.x = 0.16 + trans[0] + 0.16
+        # ur5_pose_1.position.y = 0 + trans[1] - 0.4
+        # ur5_pose_1.position.z = 0.53 + trans[2] 
+        # ur5_pose_1.orientation.x = -0.20426466049594807
+        # ur5_pose_1.orientation.y = 0.9759094471343439
+        # ur5_pose_1.orientation.z = -0.07502044797426752
+        # ur5_pose_1.orientation.w = 0.01576806431223178
+
+
+        ur5_pose_1.position.x = 0.16 + trans.transform.translation.x + 0.16
+        ur5_pose_1.position.y = 0 + trans.transform.translation.y - 0.4
+        ur5_pose_1.position.z = 0.53 + trans.transform.translation.z 
         ur5_pose_1.orientation.x = -0.20426466049594807
         ur5_pose_1.orientation.y = 0.9759094471343439
         ur5_pose_1.orientation.z = -0.07502044797426752
@@ -308,9 +321,18 @@ def main(args):                                                                 
 
 
 
-        ur5_pose_3.position.x = 0.16 + trans1[0] + 0.16
-        ur5_pose_3.position.y = 0 + trans1[1] - 0.4
-        ur5_pose_3.position.z = 0.53 + trans1[2] 
+        # ur5_pose_3.position.x = 0.16 + trans1[0] + 0.16
+        # ur5_pose_3.position.y = 0 + trans1[1] - 0.4
+        # ur5_pose_3.position.z = 0.53 + trans1[2] 
+        # ur5_pose_3.orientation.x = -0.20426466049594807
+        # ur5_pose_3.orientation.y = 0.9759094471343439
+        # ur5_pose_3.orientation.z = -0.07502044797426752
+        # ur5_pose_3.orientation.w = 0.01576806431223178
+
+
+        ur5_pose_3.position.x = 0.16 + trans1.transform.translation.x + 0.16
+        ur5_pose_3.position.y = 0 + trans1.transform.translation.y - 0.4
+        ur5_pose_3.position.z = 0.53 + trans1.transform.translation.z
         ur5_pose_3.orientation.x = -0.20426466049594807
         ur5_pose_3.orientation.y = 0.9759094471343439
         ur5_pose_3.orientation.z = -0.07502044797426752
