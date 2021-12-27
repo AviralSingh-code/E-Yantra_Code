@@ -238,7 +238,8 @@ def main(args):                                                                 
     rate = rospy.Rate(10.0)
     while not rospy.is_shutdown():
         try:
-            (trans,rot) = listener.lookupTransform('base_link', 'obj0', rospy.Time(0))
+            (trans,rot) = listener.lookupTransform('base_link', 'obj1', rospy.Time(0))
+            (trans1,rot1) = listener.lookupTransform('base_link', 'obj0', rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
 
@@ -288,7 +289,7 @@ def main(args):                                                                 
         # ur5_pose_1.orientation.w = -1
 
 
-        ur5_pose_1.position.x = 0.16 + trans[0] 
+        ur5_pose_1.position.x = 0.16 + trans[0] + 0.16
         ur5_pose_1.position.y = 0 + trans[1] - 0.4
         ur5_pose_1.position.z = 0.53 + trans[2] 
         ur5_pose_1.orientation.x = -0.20426466049594807
