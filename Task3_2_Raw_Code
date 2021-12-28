@@ -403,8 +403,8 @@ def main(args):                                                                 
         rospy.sleep(1)
         ur5.gripper_robot(1)
         rospy.sleep(1)
-        ur5.arm_robot(0)
-        rospy.sleep(1)
+        # ur5.arm_robot(0)
+        # rospy.sleep(1)
         ur5.arm_robot(1)
         rospy.sleep(1)
         ur5.gripper_robot(0)
@@ -412,8 +412,8 @@ def main(args):                                                                 
 
 
 
-        ur5.arm_robot(0)
-        rospy.sleep(1)
+        # ur5.arm_robot(0)
+        # rospy.sleep(1)
 
 
 
@@ -422,16 +422,16 @@ def main(args):                                                                 
 
         ur5.go_to_pose(ur5_pose_3)
         rospy.sleep(1)
-        ur5.go_to_pose(ur5_pose_4)
-        rospy.sleep(1)
-        ur5.gripper_robot(1)
-        rospy.sleep(1)
-        ur5.arm_robot(0)
-        rospy.sleep(1)
-        ur5.arm_robot(1)
-        rospy.sleep(1)
-        ur5.gripper_robot(0)
-        rospy.sleep(1)
+        # ur5.go_to_pose(ur5_pose_4)
+        # rospy.sleep(1)
+        # ur5.gripper_robot(1)
+        # rospy.sleep(1)
+        # # ur5.arm_robot(0)
+        # # rospy.sleep(1)
+        # ur5.arm_robot(1)
+        # rospy.sleep(1)
+        # ur5.gripper_robot(0)
+        # rospy.sleep(1)
 
 
         # ur5.go_to_pose(ur5_pose_3)
