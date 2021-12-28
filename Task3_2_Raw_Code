@@ -255,7 +255,7 @@ def main(args):                                                                 
     ur5_pose_1 = geometry_msgs.msg.Pose()
     ur5_pose_2 = geometry_msgs.msg.Pose()
     ur5_pose_3 = geometry_msgs.msg.Pose()
-    # ur5_pose_4 = geometry_msgs.msg.Pose()
+    ur5_pose_4 = geometry_msgs.msg.Pose()
     
     while not rospy.is_shutdown():
         ur5.arm_robot(0)
@@ -340,14 +340,31 @@ def main(args):                                                                 
         ur5_pose_2.orientation.z = -0.07502044797426752
         ur5_pose_2.orientation.w = 0.01576806431223178
 
+        ur5_pose_3.position.x = 0.16 + trans1.transform.translation.x + 0.16
+        ur5_pose_3.position.y = 0 + trans1.transform.translation.y - 0.4
+        ur5_pose_3.position.z = 0.53 + trans1.transform.translation.z 
+        ur5_pose_3.orientation.x = -0.20426466049594807
+        ur5_pose_3.orientation.y = 0.9759094471343439
+        ur5_pose_3.orientation.z = -0.07502044797426752
+        ur5_pose_3.orientation.w = 0.01576806431223178
 
-        ur5_pose_3.position.x = 0.050837405356531036
-        ur5_pose_3.position.y = -0.30104679166943865
-        ur5_pose_3.position.z = 1.0103567940402938 
-        ur5_pose_3.orientation.x = 3.075719088687778e-05
-        ur5_pose_3.orientation.y = 0.9990569904292724
-        ur5_pose_3.orientation.z = -0.043418051694363066
-        ur5_pose_3.orientation.w = 4.1418179317504654e-05
+
+        ur5_pose_4.position.x = 0.16 + trans1.transform.translation.x + 0.1
+        ur5_pose_4.position.y = 0 + trans1.transform.translation.y - 0.25
+        ur5_pose_4.position.z = 0.53 + trans1.transform.translation.z + 0.02
+        ur5_pose_4.orientation.x = -0.20426466049594807
+        ur5_pose_4.orientation.y = 0.9759094471343439
+        ur5_pose_4.orientation.z = -0.07502044797426752
+        ur5_pose_4.orientation.w = 0.01576806431223178
+
+
+        # ur5_pose_3.position.x = 0.050837405356531036
+        # ur5_pose_3.position.y = -0.30104679166943865
+        # ur5_pose_3.position.z = 1.0103567940402938 
+        # ur5_pose_3.orientation.x = 3.075719088687778e-05
+        # ur5_pose_3.orientation.y = 0.9990569904292724
+        # ur5_pose_3.orientation.z = -0.043418051694363066
+        # ur5_pose_3.orientation.w = 4.1418179317504654e-05
 
 
 
@@ -380,11 +397,29 @@ def main(args):                                                                 
 
         
 
-        # ur5.go_to_pose(ur5_pose_1)
+        ur5.go_to_pose(ur5_pose_1)
+        rospy.sleep(1)
+        ur5.go_to_pose(ur5_pose_2)
+        rospy.sleep(1)
+        ur5.gripper_robot(1)
+        rospy.sleep(1)
+        ur5.arm_robot(0)
+        rospy.sleep(1)
+        ur5.arm_robot(1)
+        rospy.sleep(1)
+        ur5.gripper_robot(0)
+        rospy.sleep(1)
+
+
+        # ur5.go_to_pose(ur5_pose_3)
         # rospy.sleep(1)
-        # ur5.go_to_pose(ur5_pose_2)
+        # ur5.go_to_pose(ur5_pose_4)
         # rospy.sleep(1)
         # ur5.gripper_robot(1)
+        # rospy.sleep(1)
+        # ur5.arm_robot(1)
+        # rospy.sleep(1)
+        # ur5.gripper_robot(0)
         # rospy.sleep(1)
 
         # ur5.go_to_pose(ur5_pose_3)
@@ -393,8 +428,6 @@ def main(args):                                                                 
         # ur5.go_to_pose(ur5_pose_4)
         # rospy.sleep(1)
 
-        ur5.arm_robot(1)
-        rospy.sleep(1)
         break
     del ur5
 
