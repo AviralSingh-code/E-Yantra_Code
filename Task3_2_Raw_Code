@@ -15,7 +15,7 @@ import moveit_commander
 import moveit_msgs.msg
 import actionlib
 import math
-# import tf
+
 
 
 
@@ -90,6 +90,14 @@ class Ur5Moveit:
         elif state == 0:                #state 0 means that the gripper will be in the open state
             self._hand_group.set_named_target("open")           #this sets the state to open
             plan2 = self._hand_group.go()
+
+    def arm_robot(self,state):
+        if state == 1:
+            self._group.set_named_target("Drop_Pose")
+            plan3 = self._group.go()
+        elif state == 0:
+            self._group.set_named_target("Plant_Perception")
+            plan3 = self._group.go()
 
     def go_to_pose(self, arg_pose):
 
@@ -247,11 +255,14 @@ def main(args):                                                                 
     ur5_pose_1 = geometry_msgs.msg.Pose()
     ur5_pose_2 = geometry_msgs.msg.Pose()
     ur5_pose_3 = geometry_msgs.msg.Pose()
+    # ur5_pose_4 = geometry_msgs.msg.Pose()
     
     while not rospy.is_shutdown():
+        ur5.arm_robot(0)
+        rospy.sleep(1)
         try:
-            trans = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time())
-            trans1 = tfBuffer.lookup_transform('base_link', 'obj1', rospy.Time())
+            trans = tfBuffer.lookup_transform('base_link', 'obj1', rospy.Time())
+            trans1 = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time())
             # (trans,rot) = listener.lookupTransform('base_link', 'obj1', rospy.Time(0))
             # (trans1,rot1) = listener.lookupTransform('base_link', 'obj0', rospy.Time(0))
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
@@ -340,6 +351,16 @@ def main(args):                                                                 
 
 
 
+        # ur5_pose_4.position.x = 0.3241341883029524
+        # ur5_pose_4.position.y = 0.10915622813932804
+        # ur5_pose_4.position.z = 0.728391458265601 
+        # ur5_pose_4.orientation.x = -0.6740602741221794
+        # ur5_pose_4.orientation.y = -0.6740372827163881
+        # ur5_pose_4.orientation.z = 0.21370684398858708
+        # ur5_pose_4.orientation.w = 0.2136489484904572
+
+
+
         # ur5_pose_3.position.x = 0.16 + trans1[0] + 0.16
         # ur5_pose_3.position.y = 0 + trans1[1] - 0.4
         # ur5_pose_3.position.z = 0.53 + trans1[2] 
@@ -359,15 +380,21 @@ def main(args):                                                                 
 
         
 
-        ur5.go_to_pose(ur5_pose_1)
-        rospy.sleep(1)
-        ur5.go_to_pose(ur5_pose_2)
-        rospy.sleep(1)
-        ur5.gripper_robot(1)
-        rospy.sleep(1)
+        # ur5.go_to_pose(ur5_pose_1)
+        # rospy.sleep(1)
+        # ur5.go_to_pose(ur5_pose_2)
+        # rospy.sleep(1)
+        # ur5.gripper_robot(1)
+        # rospy.sleep(1)
 
         # ur5.go_to_pose(ur5_pose_3)
         # rospy.sleep(1)
+
+        # ur5.go_to_pose(ur5_pose_4)
+        # rospy.sleep(1)
+
+        ur5.arm_robot(1)
+        rospy.sleep(1)
         break
     del ur5
 
