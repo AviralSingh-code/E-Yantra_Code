@@ -15,7 +15,7 @@ import moveit_commander
 import moveit_msgs.msg
 import actionlib
 import math
-import tf
+# import tf
 
 
 
@@ -57,6 +57,7 @@ class Ur5Moveit:
         self._robot = moveit_commander.RobotCommander()
         self._scene = moveit_commander.PlanningSceneInterface()
         self._group = moveit_commander.MoveGroupCommander(self._planning_group)
+        self._hand_group = moveit_commander.MoveGroupCommander("gripper")  #this is to initialize a new group called the _hand_group so that the opening and closing of the gripper can be controlled
         self._display_trajectory_publisher = rospy.Publisher(
             '/move_group/display_planned_path', moveit_msgs.msg.DisplayTrajectory, queue_size=1)
 
@@ -80,6 +81,15 @@ class Ur5Moveit:
             '\033[94m' + "Group Names: {}".format(self._group_names) + '\033[0m')
 
         rospy.loginfo('\033[94m' + " >>> Ur5Moveit init done." + '\033[0m')
+
+
+    def gripper_robot(self,state):          #this function is used to control the gripper and it accepts the state variable for setting the state of the gripper
+        if state == 1:                      #state 1 means that the gripper will be in the closed state
+            self._hand_group.set_named_target("close")      #this is to set the target to a pre-defined pose of the gripper as close
+            plan2 = self._hand_group.go()               #this line plans and executes the instructions given by moveit
+        elif state == 0:                #state 0 means that the gripper will be in the open state
+            self._hand_group.set_named_target("open")           #this sets the state to open
+            plan2 = self._hand_group.go()
 
     def go_to_pose(self, arg_pose):
 
@@ -240,8 +250,8 @@ def main(args):                                                                 
     
     while not rospy.is_shutdown():
         try:
-            trans = tfBuffer.lookup_transform('base_link', 'obj1', rospy.Time())
-            trans1 = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time())
+            trans = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time())
+            trans1 = tfBuffer.lookup_transform('base_link', 'obj1', rospy.Time())
             # (trans,rot) = listener.lookupTransform('base_link', 'obj1', rospy.Time(0))
             # (trans1,rot1) = listener.lookupTransform('base_link', 'obj0', rospy.Time(0))
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
@@ -311,13 +321,22 @@ def main(args):                                                                 
         ur5_pose_1.orientation.w = 0.01576806431223178
 
 
-        ur5_pose_2.position.x = 0.050837405356531036
-        ur5_pose_2.position.y = -0.30104679166943865
-        ur5_pose_2.position.z = 1.0103567940402938 
-        ur5_pose_2.orientation.x = 3.075719088687778e-05
-        ur5_pose_2.orientation.y = 0.9990569904292724
-        ur5_pose_2.orientation.z = -0.043418051694363066
-        ur5_pose_2.orientation.w = 4.1418179317504654e-05
+        ur5_pose_2.position.x = 0.16 + trans.transform.translation.x + 0.1
+        ur5_pose_2.position.y = 0 + trans.transform.translation.y - 0.2
+        ur5_pose_2.position.z = 0.53 + trans.transform.translation.z + 0.02
+        ur5_pose_2.orientation.x = -0.20426466049594807
+        ur5_pose_2.orientation.y = 0.9759094471343439
+        ur5_pose_2.orientation.z = -0.07502044797426752
+        ur5_pose_2.orientation.w = 0.01576806431223178
+
+
+        ur5_pose_3.position.x = 0.050837405356531036
+        ur5_pose_3.position.y = -0.30104679166943865
+        ur5_pose_3.position.z = 1.0103567940402938 
+        ur5_pose_3.orientation.x = 3.075719088687778e-05
+        ur5_pose_3.orientation.y = 0.9990569904292724
+        ur5_pose_3.orientation.z = -0.043418051694363066
+        ur5_pose_3.orientation.w = 4.1418179317504654e-05
 
 
 
@@ -330,13 +349,13 @@ def main(args):                                                                 
         # ur5_pose_3.orientation.w = 0.01576806431223178
 
 
-        ur5_pose_3.position.x = 0.16 + trans1.transform.translation.x + 0.16
-        ur5_pose_3.position.y = 0 + trans1.transform.translation.y - 0.4
-        ur5_pose_3.position.z = 0.53 + trans1.transform.translation.z
-        ur5_pose_3.orientation.x = -0.20426466049594807
-        ur5_pose_3.orientation.y = 0.9759094471343439
-        ur5_pose_3.orientation.z = -0.07502044797426752
-        ur5_pose_3.orientation.w = 0.01576806431223178
+        # ur5_pose_4.position.x = 0.16 + trans1.transform.translation.x + 0.16
+        # ur5_pose_4.position.y = 0 + trans1.transform.translation.y - 0.4
+        # ur5_pose_4.position.z = 0.53 + trans1.transform.translation.z
+        # ur5_pose_4.orientation.x = -0.20426466049594807
+        # ur5_pose_4.orientation.y = 0.9759094471343439
+        # ur5_pose_4.orientation.z = -0.07502044797426752
+        # ur5_pose_4.orientation.w = 0.01576806431223178
 
         
 
