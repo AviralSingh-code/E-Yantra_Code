@@ -77,6 +77,10 @@ flag9 = False
 flag10 = False
 flag11 = False
 flag12 = False
+flag13 = False
+flag14 = False
+flag15 = False
+flag16 = False
 #######################
 
 
@@ -318,6 +322,10 @@ def moveStraight():
     global flag10
     global flag11
     global flag12
+    global flag13
+    global flag14
+    global flag15
+    global flag16
     global pose
     global flagDetect
     if flag3 is True:
@@ -333,7 +341,7 @@ def moveStraight():
             flag5 = True
         else:
             if flagDetect is True:
-                linear_vel = 0.3
+                linear_vel = 0.1
                 angular_vel = 0.0 
                 flagDetect = False
                 Pcontroller()
@@ -376,7 +384,7 @@ def moveStraight():
             flag9 = True
         else:
             if flagDetect is True:
-                linear_vel = 0.3
+                linear_vel = 0.1
                 angular_vel = 0.0 
                 flagDetect = False
                 Pcontroller()
@@ -396,25 +404,72 @@ def moveStraight():
                 linear_vel = 0.0
                 angular_vel = 1.7
     elif flag10 is True:
-        if pose[0] > 2.507:
+        if pose[0] > 2.3:
             flag10 = False
             flag11 = True
         else:
-            if pose[0] <= 2.507 :
+            if pose[0] <= 2.3:
                 linear_vel = 1.0
                 angular_vel = 0.0
     elif flag11 is True:
         if pose[2] > 1.56:
             flag11 = False
+            flag12 = True
         else:
             linear_vel = 0.0
             angular_vel = 1.7
     elif flag12 is True:
         if pose[1] >= 7.22:
             flag12 = False
+            flag13 = True
+        else:
+            if pose[1] < -0.56:
+                linear_vel = 1.0
+                angular_vel = 0.0
+            elif flagDetect is True:
+                linear_vel = 0.1
+                angular_vel = 0.0 
+                flagDetect = False
+                Pcontroller()
+            else:
+                linear_vel = 0.5
+                angular_vel = 0.0
+                Pcontroller()
+    elif flag13 is True:
+        if pose[2] < 0:
+            flag13 = False
+            flag14 = True
+        else:
+            if pose[1] <=8.27:
+                linear_vel = 1.0
+                angular_vel = 0.0
+            elif pose[2] > 0:
+                linear_vel = 0.0
+                angular_vel = 1.7
+    elif flag14 is True:
+        if pose[2] > -1.6 and pose[2] < -1.4:
+            flag14 = False
+            flag15 = True
+        else:
+            if pose[0] >= 0.97:
+                linear_vel = 1.0
+                angular_vel = 0.0
+            elif pose[2] > -1.4 or pose[2] < -1.6:
+                linear_vel = 0.0
+                angular_vel = 1.7
+    elif flag15 is True:
+        if pose[1] < 7.7:
+            flag15 = False
+            flag16 = True
+        else:
+            linear_vel = 1.0
+            angular_vel = 0.0
+    elif flag16 is True:
+        if pose[1] < 0.0:
+            flag16 = False
         else:
             if flagDetect is True:
-                linear_vel = 0.3
+                linear_vel = 0.1
                 angular_vel = 0.0 
                 flagDetect = False
                 Pcontroller()
@@ -424,7 +479,6 @@ def moveStraight():
                 Pcontroller()
     else:
         stopMotion()
-
     
         
         
@@ -464,9 +518,9 @@ def odom_callback(data):        #callback funtion for odom
     w = data.pose.pose.orientation.w
     pose = [data.pose.pose.position.x, data.pose.pose.position.y, euler_from_quaternion([x,y,z,w])[2]]
     rospy.loginfo("############################")
-    # rospy.loginfo(pose[0])
+    rospy.loginfo(pose[0])
     # rospy.loginfo(pose[1])
-    rospy.loginfo(pose[2])
+    # rospy.loginfo(pose[2])
     rospy.loginfo("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
 
