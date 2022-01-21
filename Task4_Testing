@@ -270,7 +270,7 @@ def getContours(img):           #this function is used to draw contours in their
                 (midX, midY), cv2.FONT_HERSHEY_SIMPLEX,         #cv2.FONT_HERSHEY_SIMPLEX ----> is the font used to label the image
                 0.5, (255, 0, ), 2)             #0.5 is the font scale, (255, 0, 0) is for giving blue colour and 2 is the thickness
 
-                if depth <= 0.5:
+                if depth <= 0.60:
                     t.transform.translation.x = Z          #this is for transforming the world coordinates to the camera frame that is on the arm
                     t.transform.translation.y = -X         #this is for transforming the world coordinates to the camera frame that is on the arm
                     t.transform.translation.z = -Y         #this is for transforming the world coordinates to the camera frame that is on the arm
@@ -284,7 +284,8 @@ def getContours(img):           #this function is used to draw contours in their
                     br.sendTransform(t)         #for broadcating the TF 
 
                 counter = counter+1 #as this loop loops through the number of times equal to the number of unique contours that can be drawn then if the counter is incremented same number of times it will have unique value starting from 1 for every contour
-
+        else:
+            flagDetect = False
     cv2.imshow("Result",imgContour)         #this is for displaying the final image with all the contours on it
     cv2.waitKey(1)          #this is for adding a 1 millisecond delay
 
@@ -343,7 +344,6 @@ def moveStraight():
             if flagDetect is True:
                 linear_vel = 0.1
                 angular_vel = 0.0 
-                flagDetect = False
                 Pcontroller()
             else:
                 linear_vel = 0.5
@@ -386,7 +386,6 @@ def moveStraight():
             if flagDetect is True:
                 linear_vel = 0.1
                 angular_vel = 0.0 
-                flagDetect = False
                 Pcontroller()
             else:
                 linear_vel = 0.5
@@ -429,7 +428,6 @@ def moveStraight():
             elif flagDetect is True:
                 linear_vel = 0.1
                 angular_vel = 0.0 
-                flagDetect = False
                 Pcontroller()
             else:
                 linear_vel = 0.5
@@ -471,7 +469,6 @@ def moveStraight():
             if flagDetect is True:
                 linear_vel = 0.1
                 angular_vel = 0.0 
-                flagDetect = False
                 Pcontroller()
             else:
                 linear_vel = 0.5
@@ -517,11 +514,11 @@ def odom_callback(data):        #callback funtion for odom
     z = data.pose.pose.orientation.z
     w = data.pose.pose.orientation.w
     pose = [data.pose.pose.position.x, data.pose.pose.position.y, euler_from_quaternion([x,y,z,w])[2]]
-    rospy.loginfo("############################")
-    rospy.loginfo(pose[0])
+    # rospy.loginfo("############################")
+    # rospy.loginfo(pose[0])
     # rospy.loginfo(pose[1])
     # rospy.loginfo(pose[2])
-    rospy.loginfo("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    # rospy.loginfo("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
 
 
@@ -564,7 +561,7 @@ def Pcontroller():     #function for the proportional controller --> this has be
     global angular_vel
     global regions
     kp = 10
-    angular_vel = kp * (regions['bleft']-0.45)
+    angular_vel = kp * (regions['bleft']-0.60)
 
 
 
@@ -594,6 +591,7 @@ def main(args):                                                                 
     global flag1
     global flag2
     global ArucoId
+    global flagDetect
     
     while not rospy.is_shutdown():                      #while loop
 
@@ -759,7 +757,8 @@ def main(args):                                                                 
             rospy.sleep(0.1)
 
             ######################################################################################################
-
+            flag1 = True
+            flag2 = False
             # break           #to break out of the loop 
     del ur5             #to delete the ur5 object
 
