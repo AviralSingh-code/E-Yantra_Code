@@ -237,7 +237,7 @@ def getContours(img):           #this function is used to draw contours in their
     counter = 0  #this counter is used to label the child frame ------> that means it's value is used to give unique label to every contour and hence giving unique value to every tomato
     for cnt in contours:                #for loop is for iterating over all the contours that needs to be drawn
         area = cv2.contourArea(cnt)         #this function is used to return the area of every contour that can be drawn on the image ---> that means every red tomato visible currently
-        if area > 150:                   #this is for filtering the noise ---> that means if the area is >10 then it means we are looking at something substantial and we need to draw contour on that and broadcast the TF for that
+        if area > 600:                   #this is for filtering the noise ---> that means if the area is >10 then it means we are looking at something substantial and we need to draw contour on that and broadcast the TF for that
             flagDetect = True
             peri = cv2.arcLength(cnt, True)     #this is to get the perimeter of the contour
 
@@ -253,7 +253,7 @@ def getContours(img):           #this function is used to draw contours in their
 
             if midX != 0 and midY != 0 and midX <= 640 and midY <= 480:     #as the frame of the output image is 640 x 480 pixels so this is to prevent accessing values that are out of bound by any case
                 depth = depth_image[midY][midX]         #the depth value is registered for the point (midX, midY)
-                rospy.loginfo(depth)
+                # rospy.loginfo(depth)
 
                 X = depth*((midX-cx)/fx)            #conversion to the world coordinates
                 Y = depth*((midY-cy)/fy)            #conversion to the world coordinates
@@ -270,7 +270,9 @@ def getContours(img):           #this function is used to draw contours in their
                 (midX, midY), cv2.FONT_HERSHEY_SIMPLEX,         #cv2.FONT_HERSHEY_SIMPLEX ----> is the font used to label the image
                 0.5, (255, 0, ), 2)             #0.5 is the font scale, (255, 0, 0) is for giving blue colour and 2 is the thickness
 
-                if depth <= 0.60:
+                depth = depth_image[midY][midX-w//2]
+                rospy.loginfo(depth)
+                if depth <= 0.75:
                     t.transform.translation.x = Z          #this is for transforming the world coordinates to the camera frame that is on the arm
                     t.transform.translation.y = -X         #this is for transforming the world coordinates to the camera frame that is on the arm
                     t.transform.translation.z = -Y         #this is for transforming the world coordinates to the camera frame that is on the arm
@@ -561,7 +563,7 @@ def Pcontroller():     #function for the proportional controller --> this has be
     global angular_vel
     global regions
     kp = 10
-    angular_vel = kp * (regions['bleft']-0.60)
+    angular_vel = kp * (regions['bleft']-0.65)
 
 
 
