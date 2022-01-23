@@ -66,6 +66,8 @@ pose = [0.0] * 4        #initializing the pose variable
 
 flagDetect = False
 
+flagExecution = True
+
 # Flag Variables to handle the stage of motion of the agribot
 flag3 = True
 flag4 = False
@@ -139,6 +141,8 @@ class Ur5Moveit:
 
     def go_to_pose(self, arg_pose):                                     #this function takes the arm to a specific pose
 
+        global flagExecution
+
         pose_values = self._group.get_current_pose().pose               #for displaying the current pose of the arm
         rospy.loginfo('\033[94m' + ">>> Current Pose:" + '\033[0m')
         rospy.loginfo(pose_values)
@@ -155,9 +159,11 @@ class Ur5Moveit:
         rospy.loginfo(list_joint_values)
 
         if (flag_plan == True):                                 #this flag is used to display whether the planning and the execution was successful
+            flagExecution = True
             rospy.loginfo(
                 '\033[94m' + ">>> go_to_pose() Success" + '\033[0m')
         else:
+            flagExecution = False
             rospy.logerr(
                 '\033[94m' + ">>> go_to_pose() Failed. Solution for Pose not Found." + '\033[0m')
 
@@ -594,6 +600,7 @@ def main(args):                                                                 
     global flag2
     global ArucoId
     global flagDetect
+    global flagExecution
     
     while not rospy.is_shutdown():                      #while loop
 
@@ -741,6 +748,8 @@ def main(args):                                                                 
             ur5_pose_1.position.z = base_link_Position_Z + tomato2_Position_Z_Transform
 
             ur5.go_to_pose(ur5_pose_1)
+            if flagExecution is False:
+                continue
             rospy.sleep(0.1)
 
             ur5_pose_1.position.x = base_link_Position_X + tomato2_Position_X_Transform + offset_x_2
