@@ -540,8 +540,8 @@ def main(args):                                                                 
     pub.publish(velocity_msg)
     global linear_vel
     global angular_vel
-    global flag1
-    global flag2
+    global flagPose
+    global flag
     global ArucoId
     global flagDetect
     global flagExecution
@@ -557,42 +557,58 @@ def main(args):                                                                 
 
         ##########################################################
         elif flag is True:
+            '''In this section we will move the bot till the time the TF of the tomato is not available ----> the TF of the bot will only be availabe when the tomato is within a fixed depth range'''
             try:                                                                            #try to handle exceptions
                 trans = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time(0))      #for getting the TF of obj0 ----> tomato in the scene
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                moveBot()
+                moveBot()                           #if the TF of the bot is not available then the bot has to keep moving
                 velocity_msg.linear.x = linear_vel
                 velocity_msg.angular.z = angular_vel
                 pub.publish(velocity_msg)          #publishing the value to the bot
-                ArucoId = '-1'
+
+                '''If the tomato is not visible then the aruco id is set to an invalid id ---> this will prevent the bot from alligning to the previous marker when the tomato is visible , 
+                this is very important because if it is set to some valid id as 0 then when we are trying to allign the bot to the marker it will already have TF of some valid marker and 
+                it will try to move to that marker to allign itself insead of moving slowly forward and alligning to the marker that is visible or will get visible in moving forward
+                instead of alligning to the previous marker'''
+
+                ArucoId = '-1' #set to invalid id -1
+
                 continue                                                                    #to continue with the next iteration if we get some exception
 
+            ##########################################################################################################
+
+            '''In this section we are alligning the Aruco Marker ----> as we have set the aruco id to invalid id -1 so when the TF is check it will definitely not be available so the 
+            bot will drift with a small velocity till the time the marker becomes visible ---> when the marker becomes visible not the task is to center the marker so that the bot is exactly 
+            in the front of the trough this is done using the while loop and the bot is moved forward and backward accordingly to bring the center of the marker to a region that is greater than -0.01
+            and less than 0.01 ---> over here we have taken a small region so that overcorrection is not triggered and that loop will get stuck'''
 
             try:
                 transAruco = tfBuffer.lookup_transform('sjcam_link', 'aruco'+ArucoId, rospy.Time(0))
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-                velocity_msg.linear.x = 0.1
+                velocity_msg.linear.x = 0.1             #till the time the TF of the aruco is not available then the bot is moving with a small velocity of 0.1
                 velocity_msg.angular.z = 0.0
                 pub.publish(velocity_msg)
                 continue
-            while transAruco.transform.translation.y > 0.01 or transAruco.transform.translation.y < -0.01:
-                if transAruco.transform.translation.y > 0.01:
+            while transAruco.transform.translation.y > 0.01 or transAruco.transform.translation.y < -0.01:  #when the TF is available but the center of the Aruco is not in the range 
+                if transAruco.transform.translation.y > 0.01:   #if the bot has moved forward by any chance then a negative velocity will bring it back
                     velocity_msg.linear.x = -0.1
                     velocity_msg.angular.z = 0.0
                     pub.publish(velocity_msg)
-                elif transAruco.transform.translation.y < -0.01:
+                elif transAruco.transform.translation.y < -0.01:        #if the bot has moved backward then a positive velocity will do the work
                     velocity_msg.linear.x = 0.1
                     velocity_msg.angular.z = 0.0
                     pub.publish(velocity_msg)
-                transAruco = tfBuffer.lookup_transform('sjcam_link', 'aruco'+ArucoId, rospy.Time(0))
+                transAruco = tfBuffer.lookup_transform('sjcam_link', 'aruco'+ArucoId, rospy.Time(0))    #the TF is continuously read so that we are able to allign the aruco properly
 
-            stopMotion()
+            ##########################################################################################################
+
+            stopMotion()                                    #to stop the motion when the allignment of the aruco 
             velocity_msg.linear.x = linear_vel
             velocity_msg.angular.z = angular_vel
             pub.publish(velocity_msg)
 
 
-            trans = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time(0))
+            trans = tfBuffer.lookup_transform('base_link', 'obj0', rospy.Time(0))  #the TF of the tomato is read again when the bot is completely stopped so that the tomato 
 
 
             #************************************************************VARIABLE DEFINITIONS******************************************************#
