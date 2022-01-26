@@ -127,6 +127,9 @@ class Ur5Moveit:
         elif state == 0:                                #State 0 is for the Plant_Perception pose ---> using this pose the TF of all the tomatoes of the plant is collected at time 0
             self._group.set_named_target("Plant_Perception")
             plan3 = self._group.go()
+        elif state == 2:
+            self._group.set_named_target("Plant_Perception_2")
+            plan3 = self._group.go()
 
     def go_to_pose(self, arg_pose):                                     #this function takes the arm to a specific pose
 
@@ -558,10 +561,20 @@ def main(args):                                                                 
     global flagExecution
     global maxCounter
     global flagEndMotion
+    flagNewPose = False         #to get to a new pose to make the accuation of the arm from this new pose in case it fails the first time
 
     hold = ''
     
     while not rospy.is_shutdown():                      #while loop
+
+
+        if flagEndMotion is True:           #gets triggered when the bot returns to its start location after completing the motion
+                stopMotion()                                    #to stop the motion when the allignment of the aruco 
+                velocity_msg.linear.x = linear_vel
+                velocity_msg.angular.z = angular_vel
+                pub.publish(velocity_msg)
+                rospy.loginfo('Mission Accomplished!')
+                break
 
         #####FOR TAKING THE ARM TO THE PLANT PERCEPTION POSE########
         if flagPose is True:
@@ -573,7 +586,7 @@ def main(args):                                                                 
         ##########################################################
         elif flag is True:
 
-            for i in range(maxCounter+1):
+            for i in range(maxCounter+1):       #this loop actually checks which tomato is in the permissible depth range 
                 try:
                     trans = tfBuffer.lookup_transform('base_link', 'obj'+str(i), rospy.Time(0))      #for getting the TF of obj0 ----> tomato in the scene
                     hold = str(i)
@@ -584,7 +597,7 @@ def main(args):                                                                 
                     break
 
 
-            if hold == '':
+            if hold == '':  #if no tomato is visible the hold will be blank string so the bot will keep moving
                 moveBot()                           #if the TF of the bot is not available then the bot has to keep moving
                 velocity_msg.linear.x = linear_vel
                 velocity_msg.angular.z = angular_vel
@@ -679,13 +692,20 @@ def main(args):                                                                 
 
             ###############################ACTUATION FOR THE TOMATO#######################################
 
+            
 
             ur5_pose_1.position.x = base_link_Position_X + tomato_Position_X_Transform + offset_x_1
             ur5_pose_1.position.y = base_link_Position_Y + tomato_Position_Y_Transform - offset_y_1
             ur5_pose_1.position.z = base_link_Position_Z + tomato_Position_Z_Transform
 
             ur5.go_to_pose(ur5_pose_1)
-            if flagExecution is False:              #this variable is used to ensure that the steps after this are only actuated when this step is successfully actuated
+            if flagNewPose is True and flagExecution is False:  #this will ensure that when the arm has moved to the new pose of perception the steps after that will only be triggered if it reaches the tomato from this pose
+                continue
+
+            if flagExecution is False and flagNewPose is False:              #this variable is used to ensure that the steps after this are only actuated when this step is successfully actuated
+                ur5.arm_robot(2)        #this is the new pose for perception ---> the arm will move to this pose if the planning fails from the first pose
+                rospy.sleep(0.1)
+                flagNewPose = True
                 continue
             rospy.sleep(0.1)
 
@@ -713,13 +733,9 @@ def main(args):                                                                 
             flagPose = True                #to set this variable to true again so that the arm positions itself correctly after picking up the tomato
             flag = False               #this will prevent further execution till the arm has not positioned itself correctly
             hold = ''
-            
-            if flagEndMotion is True:
-                rospy.loginfo('Mission Accomplished!')
-                break
+            flagNewPose = False
 
     del ur5             #to delete the ur5 object
 
 if __name__ == '__main__':
     main(sys.argv)                  #for calling the main method
-        
