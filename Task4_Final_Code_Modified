@@ -185,7 +185,7 @@ def callback_depth(data_depth):             #this callback is for accessing the 
 
 def callback_Aruco(data):
 
-    global ArucoId          #this variable is to hold the aruco id of the marker visible
+    global ArucoId
 
     try:
         bridge = CvBridge()
@@ -644,7 +644,6 @@ def main(args):                                                                 
             velocity_msg.angular.z = angular_vel
             pub.publish(velocity_msg)
 
-
             trans = tfBuffer.lookup_transform('base_link', 'obj'+hold, rospy.Time(0))  #the TF of the tomato is read again when the bot is completely stopped so that the TF of the tomato is perfectly correct
 
             rospy.loginfo('obj'+hold+' Identified at '+ArucoId)
@@ -719,14 +718,14 @@ def main(args):                                                                 
             ur5.gripper_robot(1)
             rospy.sleep(0.1)
 
-            rospy.loginfo('obj'+hold+' Picked')
+            rospy.loginfo('obj'+hold+' Picked')     #to display the picked up message
 
             ur5.arm_robot(1)
             rospy.sleep(0.1)
             ur5.gripper_robot(0)
             rospy.sleep(0.1)
 
-            rospy.loginfo('obj'+hold+' Dropped in '+'Basket')
+            rospy.loginfo('obj'+hold+' Dropped in '+'Basket')       #to display the drop message
 
             ######################################################################################################
 
