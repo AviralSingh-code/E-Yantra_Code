@@ -30,7 +30,7 @@ regions = {                 #this is to hold the laser values of paricular regio
 flagEndMotion = False
 
 
-pose = [0.0] * 4        #initializing the pose variable
+pose = [-1.0] * 4        #initializing the pose variable
 
 flagDetect = False         #this variable is to check if the tomato is visible in the frame of the camera
 
@@ -39,6 +39,16 @@ motionStage = [False] * 15          #boolean list with all values False is defin
 motionStage[0] = True               #the first stage is set to true to start the motion
 
 #######################
+
+
+
+def odom_callback(data):        #callback funtion for odom to get the correct position of the bot 
+    global pose
+    x  = data.pose.pose.orientation.x
+    y  = data.pose.pose.orientation.y
+    z = data.pose.pose.orientation.z
+    w = data.pose.pose.orientation.w
+    pose = [data.pose.pose.position.x, data.pose.pose.position.y, euler_from_quaternion([x,y,z,w])[2]]
 
 
 
@@ -223,14 +233,7 @@ def stopMotion():               #this function is to set the value of the linear
 
 
 
-def odom_callback(data):        #callback funtion for odom to get the correct position of the bot 
-    global pose
-    x  = data.pose.pose.orientation.x
-    y  = data.pose.pose.orientation.y
-    z = data.pose.pose.orientation.z
-    w = data.pose.pose.orientation.w
-    pose = [data.pose.pose.position.x, data.pose.pose.position.y, euler_from_quaternion([x,y,z,w])[2]]
-    rospy.loginfo(pose[1])
+
 
 
 
@@ -256,11 +259,10 @@ def Pcontroller():     #function for the proportional controller --> this has be
 def main(args):                                                                         #this is the main method
 
     rospy.init_node('object_detection_manipulation', anonymous=True)                                 #for initializing the node with name object_detection
-    rospy.Subscriber('/ebot/laser/scan',LaserScan, laser_callback)      #setting up the subscriber
     rospy.Subscriber('/odom', Odometry, odom_callback)  #setting up the subscriber
+    rospy.Subscriber('/ebot/laser/scan',LaserScan, laser_callback)      #setting up the subscriber
     pub = rospy.Publisher('/cmd_vel',Twist,queue_size=10)   #setting up the publisher
     
-    ur5_pose_1 = geometry_msgs.msg.Pose()                                               #for using the pose 
     velocity_msg = Twist()
 
     velocity_msg.linear.x = 0
@@ -285,6 +287,7 @@ def main(args):                                                                 
         velocity_msg.linear.x = linear_vel
         velocity_msg.angular.z = angular_vel
         pub.publish(velocity_msg)          #publishing the value to the bot
+        rospy.sleep(0.1)
 
     del ur5             #to delete the ur5 object
 
