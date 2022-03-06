@@ -159,6 +159,7 @@ class Ur5Moveit(object):
         scene = moveit_commander.PlanningSceneInterface()
         group_name = "arm"
         group = moveit_commander.MoveGroupCommander(group_name)
+        self._hand_group = moveit_commander.MoveGroupCommander("gripper")
 
 
         display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',moveit_msgs.msg.DisplayTrajectory,queue_size=20)
@@ -198,14 +199,22 @@ class Ur5Moveit(object):
         # wpose.position.z = valueZ - wpose.position.z
 
 
-        wpose.position.y -= (-0.14064413407138388 - 0.6398005701040195)   #--------> this is very important over here we are doing wpose.position.y = wpose.position.y - (wpose.position.y - valueY)
+        # wpose.position.y -= (-0.14064413407138388 - 0.6398005701040195)   #--------> this is very important over here we are doing wpose.position.y = wpose.position.y - (wpose.position.y - valueY)
+        wpose.position.y = valueY
         wpose.position.y -= 0.4
         waypoints.append(copy.deepcopy(wpose))
 
 
-        wpose.position.x -= (0.05084215747822728 - 0.09873480355403039)
+        # wpose.position.x -= (0.05084215747822728 - 0.09873480355403039)
+        wpose.position.x = valueX
         # wpose.position.y -= (-0.14064413407138388 - 0.6398005701040195) - 0.2
-        wpose.position.z -= (1.0967436083169257 - 0.9450374418876081) # and sideways (y)
+        # wpose.position.z -= (1.0967436083169257 - 0.9450374418876081) # and sideways (y)
+        wpose.position.z = valueZ
+        waypoints.append(copy.deepcopy(wpose))
+
+
+
+        wpose.position.y += 0.15
         waypoints.append(copy.deepcopy(wpose))
 
 
@@ -237,6 +246,24 @@ class Ur5Moveit(object):
         group = self.group
 
         group.execute(plan, wait=True)
+
+
+    def arm_robot(self,state):                          #this function is for taking the arm to predefined pose 
+        if state == 1:                                  #When the state of the arm is set to 1 then the arm goes to the Drop_Pose
+            self.group.set_named_target("Drop_Pose")   #Drop_Pose has been designed to drop the picked up tomatoes effectively in the bucket
+            plan3 = self.group.go()                    #For planning and execution of the Drop_Pose ---> go() function handles both the work
+        elif state == 0:                                #State 0 is for the Plant_Perception pose ---> using this pose the TF of all the tomatoes of the plant is collected at time 0
+            self.group.set_named_target("Plant_Perception")
+            plan3 = self.group.go()
+
+
+    def gripper_robot(self,state):                      #this function is used to control the gripper and it accepts the state variable for setting the state of the gripper
+        if state == 1:                                  #state 1 means that the gripper will be in the closed state
+            self._hand_group.set_named_target("close")  #this is to set the target to a pre-defined pose of the gripper as close
+            plan2 = self._hand_group.go()               #this line plans and executes the instructions given by moveit
+        elif state == 0:                                #state 0 means that the gripper will be in the open state
+            self._hand_group.set_named_target("open")   #this sets the state to open
+            plan2 = self._hand_group.go()
 
 
 
@@ -378,8 +405,8 @@ def main(args):                                                                 
 
         ####FOR TAKING THE ARM TO THE PLANT PERCEPTION POSE########
 
-        # ur5.arm_robot(0)
-        # rospy.sleep(0.1)
+        ur5.arm_robot(0)
+        rospy.sleep(0.1)
 
         ##########################################################
 
@@ -459,6 +486,15 @@ def main(args):                                                                 
         cartesian_plan, fraction = ur5.plan_cartesian_path(1, ur5_pose_1.position.x, ur5_pose_1.position.y, ur5_pose_1.position.z)
         ur5.display_trajectory(cartesian_plan)
         ur5.execute_plan(cartesian_plan)
+
+
+        ur5.gripper_robot(1)                #state 1 of the gripper is to close the gripper
+        rospy.sleep(0.1)
+
+        ur5.arm_robot(1)                    #to bring the arm to the bucket
+        rospy.sleep(0.1)
+        ur5.gripper_robot(0)                #to open the gripper
+        rospy.sleep(0.1)
  
         # ur5.go_to_pose(ur5_pose_1)       #for taking the arm to a location close to the tomato but not exactly at the pose of the tomato to make the actuation precise
         # rospy.sleep(0.1)                   #to add time delay
