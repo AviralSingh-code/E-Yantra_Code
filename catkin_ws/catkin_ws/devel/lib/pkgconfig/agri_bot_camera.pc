@@ -1,0 +1,8 @@
+prefix=/home/aviral/catkin_ws/devel
+
+Name: agri_bot_camera
+Description: Description of agri_bot_camera
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

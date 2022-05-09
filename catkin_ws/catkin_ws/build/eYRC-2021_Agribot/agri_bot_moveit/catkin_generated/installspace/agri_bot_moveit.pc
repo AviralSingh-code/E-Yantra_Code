@@ -1,0 +1,8 @@
+prefix=/home/aviral/catkin_ws/install
+
+Name: agri_bot_moveit
+Description: Description of agri_bot_moveit
+Version: 0.3.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
